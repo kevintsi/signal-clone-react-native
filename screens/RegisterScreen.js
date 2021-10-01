@@ -15,7 +15,7 @@ const RegisterScreen = ({ navigation }) => {
             let authUser = await auth.createUserWithEmailAndPassword(email, password)
             authUser.user.updateProfile({
                 displayName: name,
-                photoURL: imageUrl || "https://www.freeiconspng.com/uploads/person-icon-5.png"
+                photoURL: imageUrl || "https://avatarfiles.alphacoders.com/197/197662.jpg"
             })
         } catch (error) {
             console.log(error)

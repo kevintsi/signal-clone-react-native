@@ -26,6 +26,7 @@ const AddChatScreen = ({ navigation }) => {
 
         })
     }, [navigation])
+    
     return (
         <View style={styles.container}>
             <Input

@@ -1,12 +1,20 @@
-import React, { useLayoutEffect } from 'react'
+import React, { useLayoutEffect, useState, useEffect } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Avatar } from 'react-native-elements'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { auth } from '../firebase'
+import { auth, db } from '../firebase'
 import CustomListItem from './components/CustomListItem'
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons"
 
 const HomeScreen = ({ navigation }) => {
+
+    const [chats, setChats] = useState([])
+
+    const enterChat = (id, name) => {
+        navigation.navigate("Chat", {
+            id, 
+            name
+        })
+    }
 
     const signOut = async () => {
         try {
@@ -17,6 +25,17 @@ const HomeScreen = ({ navigation }) => {
         }
     }
 
+    useEffect(() => {
+            const unsubscribe = db.collection("chats").onSnapshot((snapshot) => {
+                console.log(`Chats : ${snapshot.docs}`)
+                setChats(snapshot.docs.map((doc) => ({
+                    id : doc.id,
+                    data : doc.data()
+                })))
+            })
+            return unsubscribe
+    }, [])
+
     useLayoutEffect(() => {
         navigation.setOptions({
             title: "Signal",
@@ -26,7 +45,7 @@ const HomeScreen = ({ navigation }) => {
             headerLeft: () => (
                 <View style={{ marginRight: 20 }}>
                     <TouchableOpacity onPress={signOut} activeOpacity={0.5}>
-                        <Avatar round source={{ uri: auth?.currentUser?.photoURL }} />
+                        <Avatar rounded source={{ uri: auth?.currentUser?.photoURL }} />
                     </TouchableOpacity>
                 </View>
             ),
@@ -38,7 +57,7 @@ const HomeScreen = ({ navigation }) => {
                     marginRight : 20
                 }}>
                     <TouchableOpacity activeOpacity={0.5}>
-                        <AntDesign name="camerao" size={24} color="black" />
+                        <AntDesign name="camerao" size={24} color="#dd392d" />
                     </TouchableOpacity>
                     <TouchableOpacity 
                         onPress={() => { navigation.navigate("AddChat")}} 
@@ -47,7 +66,7 @@ const HomeScreen = ({ navigation }) => {
                         <SimpleLineIcons 
                             name="pencil" 
                             size={24} 
-                            color="black"
+                            color="#dd392d"
                         />
                     </TouchableOpacity>
                 </View>
@@ -55,14 +74,20 @@ const HomeScreen = ({ navigation }) => {
         })
     }, [navigation])
     return (
-        <SafeAreaView>
-            <ScrollView>
-                <CustomListItem />
+        <View>
+            <ScrollView style={styles.container}>
+                {chats.map(({id, data : { name}}) => (
+                    <CustomListItem key={id} id chatName={name} enterChat={enterChat} />
+                ))}
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 
 export default HomeScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container : {
+        height : "100%"
+    }
+})

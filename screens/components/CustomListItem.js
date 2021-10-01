@@ -3,17 +3,18 @@ import { StyleSheet, Text, View } from 'react-native'
 import { ListItem, Avatar } from "react-native-elements"
 
 const CustomListItem = ({ id, chatName, enterChat }) => {
+
     return (
-        <ListItem>
+        <ListItem onPress={() => enterChat(id, chatName)} key={id} bottomDivider>
             <Avatar
                 rounded
                 source={{
-                    uri: "https://www.freeiconspng.com/uploads/person-icon-5.png"
+                    uri: "https://avatarfiles.alphacoders.com/197/197662.jpg"
                 }}
             />
             <ListItem.Content>
                 <ListItem.Title style={{ fontWeight: "bold" }}>
-                    Youtube chatroulette
+                    {chatName}
                 </ListItem.Title>
                 <ListItem.Subtitle
                     numberOfLines={1}

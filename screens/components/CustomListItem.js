@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native'
 import { ListItem, Avatar } from "react-native-elements"
 
 const CustomListItem = ({ id, chatName, enterChat }) => {
-
     return (
         <ListItem onPress={() => enterChat(id, chatName)} key={id} bottomDivider>
             <Avatar

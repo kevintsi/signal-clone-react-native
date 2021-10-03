@@ -11,7 +11,7 @@ const HomeScreen = ({ navigation }) => {
 
     const enterChat = (id, name) => {
         navigation.navigate("Chat", {
-            id, 
+            id,
             name
         })
     }
@@ -26,14 +26,14 @@ const HomeScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-            const unsubscribe = db.collection("chats").onSnapshot((snapshot) => {
-                console.log(`Chats : ${snapshot.docs}`)
-                setChats(snapshot.docs.map((doc) => ({
-                    id : doc.id,
-                    data : doc.data()
-                })))
-            })
-            return unsubscribe
+        const unsubscribe = db.collection("chats").onSnapshot((snapshot) => {
+            console.log(`Chats : ${snapshot.docs}`)
+            setChats(snapshot.docs.map((doc) => ({
+                id: doc.id,
+                data: doc.data()
+            })))
+        })
+        return unsubscribe
     }, [])
 
     useLayoutEffect(() => {
@@ -49,23 +49,23 @@ const HomeScreen = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             ),
-            headerRight : () => (
+            headerRight: () => (
                 <View style={{
-                    flexDirection : "row",
-                    justifyContent : "space-between",
-                    width : 80,
-                    marginRight : 20
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: 80,
+                    marginRight: 20
                 }}>
                     <TouchableOpacity activeOpacity={0.5}>
                         <AntDesign name="camerao" size={24} color="#dd392d" />
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={() => { navigation.navigate("AddChat")}} 
+                    <TouchableOpacity
+                        onPress={() => { navigation.navigate("AddChat") }}
                         activeOpacity={0.5}
                     >
-                        <SimpleLineIcons 
-                            name="pencil" 
-                            size={24} 
+                        <SimpleLineIcons
+                            name="pencil"
+                            size={24}
                             color="#dd392d"
                         />
                     </TouchableOpacity>
@@ -76,8 +76,8 @@ const HomeScreen = ({ navigation }) => {
     return (
         <View>
             <ScrollView style={styles.container}>
-                {chats.map(({id, data : { name}}) => (
-                    <CustomListItem key={id} id chatName={name} enterChat={enterChat} />
+                {chats.map(({ id, data: { name } }) => (
+                    <CustomListItem key={id} id={id} chatName={name} enterChat={enterChat} />
                 ))}
             </ScrollView>
         </View>
@@ -87,7 +87,7 @@ const HomeScreen = ({ navigation }) => {
 export default HomeScreen
 
 const styles = StyleSheet.create({
-    container : {
-        height : "100%"
+    container: {
+        height: "100%"
     }
 })

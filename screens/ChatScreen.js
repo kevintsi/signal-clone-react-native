@@ -1,15 +1,15 @@
-import React, { useLayoutEffect, useState } from 'react'
+import React, { useLayoutEffect, useState, useRef } from 'react'
 import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import { Avatar } from 'react-native-elements'
 import { Ionicons, FontAwesome } from "@expo/vector-icons"
 import { StatusBar } from 'expo-status-bar'
 import { auth, db } from '../firebase'
 import * as firebase from "firebase"
-import { useScrollToTop } from '@react-navigation/native'
 
 const ChatScreen = ({ navigation, route }) => {
     const [inputMessage, setInputMessage] = useState("")
     const [messages, setMessages] = useState([])
+    const scrollViewRef = useRef();
 
     const sendMessage = async () => {
         Keyboard.dismiss()
@@ -92,9 +92,12 @@ const ChatScreen = ({ navigation, route }) => {
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                     <>
-                        <ScrollView contentContainerStyle={{
-                            paddingTop: 15,
-                        }}
+                        <ScrollView
+                            ref={scrollViewRef}
+                            onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+                            contentContainerStyle={{
+                                paddingTop: 15,
+                            }}
                         >
                             {messages.map(({ id, data }) =>
                                 data.email === auth.currentUser.email ? (
@@ -205,7 +208,7 @@ const styles = StyleSheet.create({
         color: "white"
     },
     senderText: {
-        color: "black",
+        color: "white",
         fontWeight: "500",
         marginLeft: 10,
         marginBottom: 15

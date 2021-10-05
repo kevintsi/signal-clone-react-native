@@ -73,6 +73,7 @@ const HomeScreen = ({ navigation }) => {
             )
         })
     }, [navigation])
+
     return (
         <View>
             <ScrollView style={styles.container}>

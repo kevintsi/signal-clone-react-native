@@ -69,9 +69,6 @@ const ChatScreen = ({ navigation, route }) => {
             .collection("messages")
             .orderBy('timestamp', "asc")
             .onSnapshot((snapshot) => {
-                snapshot.docs.map(doc => {
-                    console.log(doc.data().timestamp)
-                })
                 setMessages(
                     snapshot.docs.map(doc => ({
                         id: doc.id,

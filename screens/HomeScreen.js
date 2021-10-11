@@ -53,8 +53,7 @@ const HomeScreen = ({ navigation }) => {
                 <View style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    width: 80,
-                    marginRight: 20
+                    width: 100
                 }}>
                     <TouchableOpacity activeOpacity={0.5}>
                         <AntDesign name="camerao" size={24} color="#dd392d" />
@@ -65,6 +64,16 @@ const HomeScreen = ({ navigation }) => {
                     >
                         <SimpleLineIcons
                             name="pencil"
+                            size={24}
+                            color="#dd392d"
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => { navigation.navigate("Settings") }}
+                        activeOpacity={0.5}
+                    >
+                        <SimpleLineIcons
+                            name="settings"
                             size={24}
                             color="#dd392d"
                         />

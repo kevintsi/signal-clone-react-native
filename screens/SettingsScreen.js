@@ -1,9 +1,13 @@
 import React, { useLayoutEffect } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { auth } from '../firebase'
-import { Avatar, Button } from 'react-native-elements'
+import { Avatar } from 'react-native-elements'
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }) => {
+
+    const deleteAccount = () => {
+        auth.currentUser.delete()
+    }
 
     return (
         <View style={styles.container}>
@@ -12,12 +16,12 @@ const SettingsScreen = () => {
                 <Text style={{ paddingTop: 10, fontSize: 25, fontWeight: "700" }}>{auth?.currentUser.displayName}</Text>
             </View>
             <View style={{ flexDirection: "column", alignItems: "center", paddingTop: 80, height: "100%" }}>
-                <TouchableOpacity style={styles.deleteAccountButton} activeOpacity={0.7}>
+                <TouchableOpacity onPress={deleteAccount} style={styles.deleteAccountButton} activeOpacity={0.7}>
                     <View style={{ borderColor: "red", borderStyle: "solid" }}>
                         <Text style={{ color: "#dd392d", fontSize: 20, fontWeight: "700" }}>Delete account</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.updateProfileButton} activeOpacity={0.7}>
+                <TouchableOpacity onPress={() => navigation.navigate("UpdateProfile")} style={styles.updateProfileButton} activeOpacity={0.7}>
                     <View style={{ borderColor: "red", borderStyle: "solid" }}>
                         <Text style={{ fontSize: 20, fontWeight: "500", color: "black" }}>Update profile</Text>
                     </View>

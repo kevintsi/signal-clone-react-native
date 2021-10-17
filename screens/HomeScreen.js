@@ -9,11 +9,35 @@ const HomeScreen = ({ navigation }) => {
 
     const [chats, setChats] = useState([])
 
-    const enterChat = (id, name) => {
-        navigation.navigate("Chat", {
-            id,
-            name
-        })
+    const enterChat = async (id, name) => {
+        try {
+
+            let participant = await db
+                .collection("chats")
+                .doc(id)
+                .collection("participants")
+                .where("userId", "==", auth.currentUser.uid)
+                .get()
+
+            console.log(participant.docs.length)
+
+            if (participant.docs.length == 0) {
+
+                await db.collection("chats").doc(id).collection("participants").add({
+                    userId: auth.currentUser.uid,
+                    photoURL: auth.currentUser.photoURL,
+                    displayName: auth.currentUser.displayName,
+                    isWriting: false
+                })
+            }
+
+            navigation.navigate("Chat", {
+                id,
+                name
+            })
+        } catch (error) {
+            alert(error.message)
+        }
     }
 
     const signOut = async () => {

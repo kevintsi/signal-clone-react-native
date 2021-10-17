@@ -9,6 +9,8 @@ import * as firebase from "firebase"
 const ChatScreen = ({ navigation, route }) => {
     const [inputMessage, setInputMessage] = useState("")
     const [messages, setMessages] = useState([])
+    const [participants, setParticipants] = useState([])
+    const [talkingPerson, setTalkingPerson] = useState([])
     const scrollViewRef = useRef();
 
     const sendMessage = async () => {
@@ -26,6 +28,50 @@ const ChatScreen = ({ navigation, route }) => {
             alert(error.message)
         }
 
+    }
+
+    const setIsWriting = async () => {
+        try {
+            let participant = participants.filter(
+                item => item.data.userId == auth.currentUser.uid
+                    && item.data.isWriting == false
+            )
+            if (participant.length !== 0) {
+
+                await db.collection("chats")
+                    .doc(route.params.id)
+                    .collection("participants")
+                    .doc(participant[0].id)
+                    .update({
+                        isWriting: true
+                    })
+            }
+
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    const endWriting = async () => {
+        try {
+            let participant = participants.filter(
+                item => item.data.userId == auth.currentUser.uid
+                    && item.data.isWriting == true
+            )
+            if (participant.length !== 0) {
+
+                await db.collection("chats")
+                    .doc(route.params.id)
+                    .collection("participants")
+                    .doc(participant[0].id)
+                    .update({
+                        isWriting: false
+                    })
+            }
+
+        } catch (error) {
+            alert(error.message)
+        }
     }
 
     useLayoutEffect(() => {
@@ -79,6 +125,62 @@ const ChatScreen = ({ navigation, route }) => {
 
         return unsubscribe
     }, [route])
+
+    useLayoutEffect(() => {
+        const unsubscribe = db
+            .collection("chats")
+            .doc(route.params.id)
+            .collection("participants")
+            .onSnapshot((snapshot) => {
+                setParticipants(
+                    snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        data: doc.data()
+                    }))
+                )
+            })
+
+        return unsubscribe
+    }, [route])
+
+    useLayoutEffect(() => {
+        const unsubscribe = db
+            .collection("chats")
+            .doc(route.params.id)
+            .collection("participants")
+            .onSnapshot((snapshot) => {
+                let list = snapshot.docs.filter(doc => doc.data().isWriting == true)
+                setTalkingPerson(
+                    list.map(doc => ({
+                        id: doc.id,
+                        data: doc.data()
+                    }))
+                )
+            })
+
+        return unsubscribe
+    }, [route])
+
+
+    useLayoutEffect(() => {
+        const unsubscribe = db
+            .collection("chats")
+            .doc(route.params.id)
+            .collection("participants")
+            .onSnapshot((snapshot) => {
+                console.log("test uselayout participants")
+                setParticipants(
+                    snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        data: doc.data()
+                    }))
+                )
+            })
+
+        return unsubscribe
+    }, [route])
+
+
 
     return (
         <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -136,12 +238,16 @@ const ChatScreen = ({ navigation, route }) => {
                                 )
                             )}
                         </ScrollView>
+
+                        {talkingPerson.length != 0 && (talkingPerson.filter(item => item.data.userId != auth.currentUser.uid)).length != 0 ? (<Text>Someone is talking...</Text>) : null}
                         <View style={styles.footer}>
                             <TextInput
                                 value={inputMessage}
                                 onChangeText={(text) => setInputMessage(text)}
                                 placeholder="Signal Message" style={styles.inputMessage}
                                 onSubmitEditing={sendMessage}
+                                onTextInput={() => setIsWriting()}
+                                onEndEditing={() => endWriting()}
                             />
                             <TouchableOpacity onPress={sendMessage} activeOpacity={0.5}>
                                 <Ionicons name="send" size={24} color="#dd392d" />

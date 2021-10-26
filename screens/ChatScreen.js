@@ -11,9 +11,13 @@ const ChatScreen = ({ navigation, route }) => {
     const [messages, setMessages] = useState([])
     const [participants, setParticipants] = useState([])
     const [talkingPerson, setTalkingPerson] = useState([])
+
     const scrollViewRef = useRef();
 
     const sendMessage = async () => {
+        if (inputMessage.trim.length === 0)
+            return;
+
         Keyboard.dismiss()
         try {
             await db.collection("chats").doc(route.params.id).collection("messages").add({
@@ -30,7 +34,8 @@ const ChatScreen = ({ navigation, route }) => {
 
     }
 
-    const setIsWriting = async () => {
+    const setIsWriting = async (text) => {
+        setInputMessage(text)
         try {
             let participant = participants.filter(
                 item => item.data.userId == auth.currentUser.uid
@@ -53,6 +58,7 @@ const ChatScreen = ({ navigation, route }) => {
     }
 
     const endWriting = async () => {
+        console.log("In endwriting")
         try {
             let participant = participants.filter(
                 item => item.data.userId == auth.currentUser.uid
@@ -243,11 +249,10 @@ const ChatScreen = ({ navigation, route }) => {
                         <View style={styles.footer}>
                             <TextInput
                                 value={inputMessage}
-                                onChangeText={(text) => setInputMessage(text)}
+                                onChangeText={(text) => setIsWriting(text)}
                                 placeholder="Signal Message" style={styles.inputMessage}
                                 onSubmitEditing={sendMessage}
-                                onTextInput={() => setIsWriting()}
-                                onEndEditing={() => endWriting()}
+                                onBlur={endWriting}
                             />
                             <TouchableOpacity onPress={sendMessage} activeOpacity={0.5}>
                                 <Ionicons name="send" size={24} color="#dd392d" />

@@ -19,7 +19,7 @@ const HomeScreen = ({ navigation }) => {
                 .where("userId", "==", auth.currentUser.uid)
                 .get()
 
-            console.log(participant.docs.length)
+            //console.log(participant.docs.length)
 
             if (participant.docs.length == 0) {
 
@@ -51,7 +51,7 @@ const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = db.collection("chats").onSnapshot((snapshot) => {
-            console.log(`Chats : ${snapshot.docs}`)
+            //console.log(`Chats : ${snapshot.docs}`)
             setChats(snapshot.docs.map((doc) => ({
                 id: doc.id,
                 data: doc.data()

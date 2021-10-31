@@ -3,16 +3,21 @@ import React, { useState, useEffect } from 'react'
 import { KeyboardAvoidingView, StyleSheet, Text, View } from 'react-native'
 import { Button, Input, Image } from "react-native-elements"
 import { auth } from '../firebase'
+import LoadingScreen from './components/LoadingScreen'
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
 
     const signIn = async () => {
         try {
+            setIsLoading(true)
             await auth.signInWithEmailAndPassword(email, password)
+            setIsLoading(false)
         } catch (error) {
             alert(error.message)
+            setIsLoading(false)
         }
     }
 
@@ -27,6 +32,7 @@ const LoginScreen = ({ navigation }) => {
     }, [])
     return (
         <KeyboardAvoidingView style={styles.container}>
+            {isLoading ? <LoadingScreen /> : null}
             <StatusBar style="light" />
             <Image
                 source={require("../assets/signal-logo.png")}

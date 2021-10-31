@@ -3,23 +3,28 @@ import React, { useLayoutEffect, useState } from 'react'
 import { KeyboardAvoidingView, StyleSheet, View } from 'react-native'
 import { Button, Input, Text } from "react-native-elements"
 import { auth } from '../firebase'
+import LoadingScreen from './components/LoadingScreen'
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [imageUrl, setImageUrl] = useState("")
+    const [isLoading, setIsLoading] = useState(false)
 
     const register = async () => {
         try {
+            setIsLoading(true)
             let authUser = await auth.createUserWithEmailAndPassword(email, password)
             authUser.user.updateProfile({
                 displayName: name,
                 photoURL: imageUrl || "https://avatarfiles.alphacoders.com/197/197662.jpg"
             })
+            setIsLoading(false)
         } catch (error) {
             console.log(error)
             alert(error.message)
+            setIsLoading(false)
         }
     }
 
@@ -31,6 +36,7 @@ const RegisterScreen = ({ navigation }) => {
 
     return (
         <KeyboardAvoidingView style={styles.container}>
+            {isLoading ? <LoadingScreen /> : null}
             <StatusBar style="light" />
             <Text h3 style={{ marginBottom: 50 }}>
                 Create a Signal account

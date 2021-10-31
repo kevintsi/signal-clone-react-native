@@ -2,22 +2,27 @@ import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Button, Input } from 'react-native-elements'
 import { auth } from '../firebase'
+import LoadingScreen from './components/LoadingScreen'
 
 const UpdateProfileScreen = ({ navigation }) => {
     const [displayName, setDisplayName] = useState("")
     const [email, setEmail] = useState("")
     const [photoURL, setPhotoURL] = useState("")
+    const [isLoading, setLoading] = useState(false)
 
     const updateProfile = async () => {
         try {
+            setLoading(true)
             await auth.currentUser.updateProfile({
                 displayName: displayName,
                 photoURL: photoURL || "https://avatarfiles.alphacoders.com/197/197662.jpg"
             })
             await auth.currentUser.updateEmail(email)
+            setLoading(false)
             alert("Profile updated successfully")
         } catch (error) {
             alert(error.message)
+            setLoading(false)
         }
     }
 
@@ -35,6 +40,7 @@ const UpdateProfileScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            {isLoading ? <LoadingScreen /> : null}
             <Text style={{ textAlign: "center", fontSize: 25, fontWeight: "700", marginBottom: 30 }} >Update Profile</Text>
             <View style={{ margin: 10 }}>
                 <View >

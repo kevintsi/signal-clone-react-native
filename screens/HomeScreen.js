@@ -1,13 +1,15 @@
 import React, { useLayoutEffect, useState, useEffect } from 'react'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Avatar } from 'react-native-elements'
 import { auth, db } from '../firebase'
 import CustomListItem from './components/CustomListItem'
 import { AntDesign, SimpleLineIcons } from "@expo/vector-icons"
+import LoadingScreen from './components/LoadingScreen'
 
 const HomeScreen = ({ navigation }) => {
 
     const [chats, setChats] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     const enterChat = async (id, name) => {
         try {
@@ -52,10 +54,12 @@ const HomeScreen = ({ navigation }) => {
     useEffect(() => {
         const unsubscribe = db.collection("chats").onSnapshot((snapshot) => {
             //console.log(`Chats : ${snapshot.docs}`)
+            setIsLoading(true)
             setChats(snapshot.docs.map((doc) => ({
                 id: doc.id,
                 data: doc.data()
             })))
+            setIsLoading(false)
         })
         return unsubscribe
     }, [])
@@ -109,6 +113,7 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <View>
+            {isLoading ? <LoadingScreen /> : null}
             <ScrollView style={styles.container}>
                 {chats.map(({ id, data: { name } }) => (
                     <CustomListItem key={id} id={id} chatName={name} enterChat={enterChat} />

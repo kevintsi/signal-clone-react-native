@@ -5,21 +5,24 @@ import { Ionicons, FontAwesome } from "@expo/vector-icons"
 import { StatusBar } from 'expo-status-bar'
 import { auth, db } from '../firebase'
 import * as firebase from "firebase"
+import LoadingScreen from './components/LoadingScreen'
 
 const ChatScreen = ({ navigation, route }) => {
     const [inputMessage, setInputMessage] = useState("")
     const [messages, setMessages] = useState([])
     const [participants, setParticipants] = useState([])
     const [talkingPerson, setTalkingPerson] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
 
     const scrollViewRef = useRef();
 
     const sendMessage = async () => {
-        if (inputMessage.trim.length === 0)
+        if (inputMessage.trim().length === 0)
             return;
 
         Keyboard.dismiss()
         try {
+            setIsLoading(true)
             await db.collection("chats").doc(route.params.id).collection("messages").add({
                 timestamp: firebase.default.firestore.FieldValue.serverTimestamp(),
                 message: inputMessage,
@@ -27,6 +30,7 @@ const ChatScreen = ({ navigation, route }) => {
                 email: auth.currentUser.email,
                 photoURL: auth.currentUser.photoURL
             })
+            setIsLoading(false)
             setInputMessage("")
         } catch (error) {
             alert(error.message)
@@ -127,6 +131,7 @@ const ChatScreen = ({ navigation, route }) => {
                         data: doc.data()
                     }))
                 )
+                setIsLoading(false)
             })
 
         return unsubscribe
@@ -197,6 +202,7 @@ const ChatScreen = ({ navigation, route }) => {
             >
                 <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
                     <>
+                        {isLoading ? <LoadingScreen /> : null}
                         <ScrollView
                             ref={scrollViewRef}
                             onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}

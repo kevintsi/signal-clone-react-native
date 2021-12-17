@@ -15,3 +15,6 @@ firebase.json
 
 # macOS
 .DS_Store
+
+.env
+public/

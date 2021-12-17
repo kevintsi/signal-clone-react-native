@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState, useRef } from 'react'
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 import { Avatar } from 'react-native-elements'
 import { Ionicons, FontAwesome } from "@expo/vector-icons"
 import { StatusBar } from 'expo-status-bar'
@@ -212,7 +212,7 @@ const ChatScreen = ({ navigation, route }) => {
                         >
                             {messages.map(({ id, data }) =>
                                 data.email === auth.currentUser.email ? (
-                                    <View key={id} style={styles.reciever}>
+                                    <View key={id} style={styles.receiver}>
                                         <Avatar
                                             size={30}
                                             source={{ uri: data.photoURL }}
@@ -227,7 +227,7 @@ const ChatScreen = ({ navigation, route }) => {
                                             bottom={-15}
                                             right={-5}
                                         />
-                                        <Text style={styles.recieverText}>{data.message}</Text>
+                                        <Text style={styles.receiverText}>{data.message}</Text>
                                     </View>
                                 ) : (
                                     <View key={id} style={styles.sender}>
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
         maxWidth: "80%",
         position: "relative"
     },
-    reciever: {
+    receiver: {
         padding: 15,
         backgroundColor: "#ECECEC",
         alignSelf: "flex-end",
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginBottom: 15
     },
-    recieverText: {
+    receiverText: {
         color: "black",
         fontWeight: "500",
         marginLeft: 10,

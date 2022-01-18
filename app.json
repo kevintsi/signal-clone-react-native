@@ -1,0 +1,8 @@
+{
+    "android": {
+      "package": "com.kevintsi.signalclone"
+    },
+    "ios": {
+        "bundleIdentifier": "com.kevintsi.signal-clone"
+      }
+}

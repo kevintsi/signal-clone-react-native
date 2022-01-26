@@ -38,7 +38,7 @@ const UpdateProfileScreen = ({ navigation }) => {
 
                         auth.currentUser.updateProfile({
                             displayName: displayName,
-                            photoURL: profilePicture.uri || "https://avatarfiles.alphacoders.com/197/197662.jpg"
+                            photoURL: url || "https://avatarfiles.alphacoders.com/197/197662.jpg"
                         }).then(() => {
                             auth.currentUser.updateEmail(email).then(() => {
                                 alert("Profile updated successfully")

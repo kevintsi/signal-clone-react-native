@@ -14,11 +14,14 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
             .collection("messages")
             .orderBy("timestamp", "desc")
             .onSnapshot((snapshot) => {
-                setLastTalkingPerson({
-                    photoURL: snapshot.docs[0]?.data().photoURL || "",
-                    message: snapshot.docs[0]?.data().message || "",
-                    displayName: snapshot.docs[0]?.data().displayName || ""
-                })
+                if (snapshot.docs.length != 0) {
+                    setLastTalkingPerson({
+                        photoURL: snapshot.docs[0]?.data().photoURL,
+                        message: snapshot.docs[0]?.data().message,
+                        displayName: snapshot.docs[0]?.data().displayName
+                    })
+                }
+                console.log(lastTalkingPerson)
             })
         return unsubscribe
     }, [])
@@ -39,7 +42,8 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
                     numberOfLines={1}
                     ellipsizeMode="tail"
                 >
-                    {lastTalkingPerson.displayName + " : " + lastTalkingPerson.message}
+                    {console.log(Object.entries(lastTalkingPerson))}
+                    {Object.entries(lastTalkingPerson).length !== 0 ? lastTalkingPerson.displayName + " : " + lastTalkingPerson.message : "No messages yet"}
                 </ListItem.Subtitle>
             </ListItem.Content>
         </ListItem>

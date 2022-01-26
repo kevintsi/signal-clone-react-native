@@ -2,27 +2,52 @@ import { StatusBar } from 'expo-status-bar'
 import React, { useLayoutEffect, useState } from 'react'
 import { KeyboardAvoidingView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Button, Input, Text } from "react-native-elements"
+import { Entypo } from '@expo/vector-icons';
 import { auth, storage } from '../firebase'
 import LoadingScreen from './components/LoadingScreen'
-import * as MediaLibrary from 'expo-media-library'
 import * as ImagePicker from 'expo-image-picker';
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const [profilePicture, setProfilePicture] = useState("")
+    const [profilePicture, setProfilePicture] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
 
     const register = async () => {
         try {
             setIsLoading(true)
             let authUser = await auth.createUserWithEmailAndPassword(email, password)
-            authUser.user.updateProfile({
-                displayName: name,
-                photoURL: profilePicture || "https://avatarfiles.alphacoders.com/197/197662.jpg"
-            })
-            setIsLoading(false)
+
+            const response = await fetch(profilePicture.uri);
+            const blob = await response.blob();
+            const storageRef = storage.ref()
+            var imageRef = storageRef.child(`images/${authUser.user.uid}/profilePicture`)
+
+            const task = imageRef.put(blob)
+
+            task.on('state_changed',
+                (taskSnapshot) => {
+                    console.log(`${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`);
+                }, (error) => {
+                    console.log("Error when uploading profile picture")
+                    console.log(error)
+                    setIsLoading(false)
+                }, () => {
+                    console.log('Image uploaded to the bucket!');
+                    task.snapshot.ref.getDownloadURL().then(url => {
+
+                        console.log("FULL PATH :" + url)
+
+                        authUser.user.updateProfile({
+                            displayName: name,
+                            photoURL: url
+                        }).then(() => {
+                            setIsLoading(false)
+                        })
+                    })
+                })
+
         } catch (error) {
             console.log(error)
             alert(error.message)
@@ -30,17 +55,8 @@ const RegisterScreen = ({ navigation }) => {
         }
     }
 
-    const selectOneFile = async () => {
+    const pickProfilePicture = async () => {
         console.log("Start profile picture...")
-        /*
-        let isPermGranted = (await MediaLibrary.getPermissionsAsync())
-        if (isPermGranted != MediaLibrary.PermissionStatus.GRANTED) {
-            isPermGranted = await MediaLibrary.requestPermissionsAsync();
-        }
-        if (isPermGranted.status != 'granted') {
-            return;
-        }
-        */
 
         // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -51,22 +67,9 @@ const RegisterScreen = ({ navigation }) => {
         });
 
         console.log(result);
-        console.log(result);
 
         if (!result.cancelled) {
-            setProfilePicture(result.uri);
-            const storageRef = storage.ref("/image/")
-
-            const response = await fetch(result.uri);
-            const blob = await response.blob();
-            const task = storageRef.put(blob)
-            task.on('state_changed', taskSnapshot => {
-                console.log(`${taskSnapshot.bytesTransferred} transferred 
-                out of ${taskSnapshot.totalBytes}`);
-            });
-            task.then(() => {
-                console.log('Image uploaded to the bucket!');
-            });
+            setProfilePicture(result);
         }
     };
 
@@ -106,10 +109,12 @@ const RegisterScreen = ({ navigation }) => {
                 />
                 <TouchableOpacity
                     activeOpacity={0.5}
-                    onPress={selectOneFile}>
+                    onPress={pickProfilePicture}>
                     <Text>
-                        Select a profile picture from your gallery
+                        {profilePicture != null ? "Picture chosen" : "Select a profile picture from your gallery"}
+                        <Entypo name="attachment" size={24} color="black" />
                     </Text>
+
                 </TouchableOpacity>
             </View>
             <Button

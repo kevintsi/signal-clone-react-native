@@ -1,10 +1,10 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Button, Input } from 'react-native-elements'
-import { Entypo } from '@expo/vector-icons';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native'
+import { Button, Avatar, Input } from 'react-native-elements'
 import { auth, storage } from '../firebase'
 import LoadingScreen from './components/LoadingScreen'
 import * as ImagePicker from 'expo-image-picker';
+import { Entypo } from '@expo/vector-icons'
 
 const UpdateProfileScreen = ({ navigation }) => {
     const [displayName, setDisplayName] = useState("")
@@ -89,28 +89,23 @@ const UpdateProfileScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {isLoading ? <LoadingScreen /> : null}
-            <Text style={{ textAlign: "center", fontSize: 25, fontWeight: "700", marginBottom: 30 }} >Update Profile</Text>
-            <View style={{ margin: 10 }}>
-                <View >
-                    <Text>Display Name :</Text>
-                    <Input placeholder="Enter your display name" value={displayName} onChangeText={(text) => setDisplayName(text)} />
-                </View>
-                <View>
-                    <Text>Email :</Text>
-                    <Input placeholder="Enter your email" value={email} onChangeText={(text) => setEmail(text)} />
-                </View>
+            <View style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <TouchableOpacity
+                    style={styles.profilePicture}
                     activeOpacity={0.5}
                     onPress={pickProfilePicture}>
-                    <Text>
-                        {profilePicture != null ? "Picture chosen" : "Select a profile picture from your gallery"}
-                        <Entypo name="attachment" size={24} color="black" />
-                    </Text>
-
+                    <Avatar size={150} rounded source={{ uri: profilePicture }} />
+                    <Entypo name="pencil" size={30} color="#dd392d" style={{ position: "absolute", left: 120 }} />
                 </TouchableOpacity>
-                <Button onPress={updateProfile} title="Update" />
             </View>
-        </View>
+            <View style={{ margin: 10, marginTop: 50, borderWidth: 0, width: "80%", display: "flex", alignItems: "flex-start" }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold", paddingLeft: 0 }}>Display Name :</Text>
+                <Input containerStyle={styles.input} placeholder="Enter your display name" value={displayName} onChangeText={(text) => setDisplayName(text)} />
+                <Text style={{ fontSize: 20, fontWeight: "bold" }}>Email :</Text>
+                <Input containerStyle={styles.input} placeholder="Enter your email" value={email} onChangeText={(text) => setEmail(text)} />
+                <Button buttonStyle={styles.updateBtn} onPress={updateProfile} title="Update" />
+            </View>
+        </View >
     )
 }
 
@@ -119,6 +114,28 @@ export default UpdateProfileScreen
 const styles = StyleSheet.create({
     container: {
         height: "100%",
-        paddingTop: 20
+        paddingTop: 20,
+        backgroundColor: "white",
+        display: "flex",
+        alignItems: "center"
+    },
+    profilePicture: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+    },
+    updateBtn: {
+        marginLeft: 120
+    },
+    updateBtnContainer: {
+        display: "flex",
+        borderWidth: 1,
+        alignItems: "center",
+        width: 100
+    },
+    input: {
+        borderWidth: 0,
+        paddingLeft: 0,
+        paddingRight: 0
     }
 })
